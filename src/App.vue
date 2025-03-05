@@ -1,10 +1,12 @@
 <script setup>
 import { ref, computed } from "vue";
+import PostCard from "@/components/PostCard.vue"  //Le @ permet de garder le chemin malgrè le changement de répertoire possible du fichier
 
 const text = ref("");
 const trimmedText = computed(() => text.value.trim());
 
 const posts = ref([]);
+const sortedPost = computed(() => posts.value.toSorted((postA, postB) => postB.createdAt - postA.createdAt))
 
 function addPost() {
   const newPost = {
@@ -15,14 +17,23 @@ function addPost() {
       username: "VicLou",
       avatarUrl: "https://media1.tenor.com/m/a5RGfluwSOgAAAAd/sylvian-delhoumi.gif",
     },
+    like: false
   };
   posts.value.push(newPost);
   text.value = "";
 }
 
-function sortPosts(post) {
-  posts.value.sort(post.createdAt);
+function deletePost(postId){
+  posts.value = posts.value.filter((post) => post.id != postId)
 }
+
+function likePost(postId){
+  let post = posts.value.find((post) => post.id == postId)
+  post.like = !post.like
+}
+
+
+
 
 /*function updateText(event) {
   text.value = event.target.value;
@@ -39,83 +50,9 @@ function sortPosts(post) {
 
       <p v-if="!posts.length">Aucun post pour le moment</p>
 
-      <article v-for="(post, index) in posts" :key="index" class="card">
-        <div class="post-header">
-          <img :src="post.author.avatarUrl" alt="avatar" width="36" height="36" />
-          <a>{{ post.author.username }}</a>
-        </div>
+      <PostCard v-for="(post, index) in sortedPost" :key="index" :post="post" @delete="deletePost" @like="likePost"/>
 
-        <p>{{ post.content }}</p>
-      </article>
+
     </div>
   </main>
 </template>
-
-<style scoped>
-.container {
-  height: 100vh;
-  margin: 0 auto;
-  max-width: 640px;
-}
-.card {
-  background-color: var(--color-bg-secondary);
-  border-radius: 10px;
-  border: 1px solid var(--color-border);
-  margin-bottom: 1rem;
-}
-
-form {
-  display: flex;
-  flex-direction: column;
-  margin-top: 1rem;
-  padding: 1rem 1.5rem;
-  width: 100%;
-}
-textarea {
-  background: none;
-  border: none;
-  color: var(--color-text-primary);
-  flex: 1;
-  margin-bottom: 1rem;
-  outline: none;
-  padding: 0.5rem 0;
-  resize: none;
-  field-sizing: content;
-}
-button {
-  align-self: flex-end;
-  background: none;
-  border-radius: 10px;
-  border: 1px solid var(--color-border);
-  color: var(--color-text-primary);
-  cursor: pointer;
-  font-size: 1rem;
-  height: 40px;
-  padding: 0 1rem;
-}
-
-button:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-
-article {
-  padding: 1rem;
-  overflow: hidden;
-}
-
-article p {
-  white-space: pre-wrap;
-}
-
-.post-header {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin-bottom: 1rem;
-}
-
-.post-header img {
-  border-radius: 50%;
-}
-</style>
