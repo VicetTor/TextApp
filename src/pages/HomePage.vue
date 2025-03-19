@@ -32,14 +32,19 @@ function likePost(postId){
   post.like = !post.like
 }
 
+const loading= ref(false);
 
 const apiPosts = ref([]);
 function fetchPosts(){
+  loading.value = true;
     const results = fetch("https://posts-crud-api.vercel.app/posts");
     results.then((response) => response.json())
     .then((data)=>{
         apiPosts.value = data;
+        loading.value = false;
     });
+    //on ne peut pas mettre le loading value à false ici car la promesse du fetch va s'exécuter à la fin de tout le code exécutée.
+    //Java script va mettre à true puis fetch puis il va directmeent mettre false puis après afficher nous on veut pas ça. On veut d'abord afficher puis false.
 }
 
 fetchPosts();
@@ -57,7 +62,8 @@ fetchPosts();
         <button :disabled="!trimmedText" type="submit">Publier</button>
       </form>
 
-      <p v-if="!apiPosts.length">Aucun post pour le moment</p>
+      <p v-if="loading" >Chargement ...</p>
+      <p v-else-if="!apiPosts.length">Aucun post pour le moment</p>
 
       <PostCard v-for="(post, index) in apiPosts" :key="index" :post="post" @delete="deletePost" @like="likePost"/>
 
