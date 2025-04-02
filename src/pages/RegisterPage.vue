@@ -19,12 +19,6 @@ const able = ref(true);
 const token = localStorage.getItem("userData");
 
 function logObjet(){
-    /*console.log("username: " + username.value + "\n" + "email: " + email.value + "\n" + "password: " + password.value + "\n");
-    able.value = false;
-    setTimeout(function(){
-        router.push({ name: "home"})
-    },1000);*/
-    
     fetch("https://posts-crud-api.vercel.app/register",{
         method: "POST",
         headers: {
